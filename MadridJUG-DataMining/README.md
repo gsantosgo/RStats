@@ -1,5 +1,5 @@
 
-![Madrid JUG](lojo/logoMadridJUG.png) Madrid Java User Group (Madrid JUG)
+![Madrid JUG](logo/logoMadridJUG.png) Madrid Java User Group (Madrid JUG)
 ==================================
 
 Mineria de Datos ( Data Mining ) - 9 de Mayo 2013 
