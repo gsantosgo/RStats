@@ -1,0 +1,106 @@
+Terremotos Peninsula Iberica
+========================== 
+
+Terremotos producidos en la Peninsula Iberica 
+
+******
+#### Abril 2013
+#### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
+#### This script is licensed under the GPLv2 license http://www.gnu.org/licenses/gpl.html
+----------------------------------------------------------------
+Note: This analysis was created on a Ubuntu 12.0.4 (RStudio 2.5.13). 
+------
+
+## Preliminaries
+
+#### Set Working Directory
+```{r working directory}
+getwd()
+WORKING_DIR <- "~/R/RStats/Data Analysis/"
+DATASET_FILE <- "./data/terremotosSpain.rda"
+FIGURES_DIR <- "./figures/"
+setwd(WORKING_DIR)
+getwd()
+```
+
+
+### Load libraries/data/create new variables
+
+```{r loadData}
+
+# Load libraries
+#install.packages("ggmap")
+library(ggmap)
+
+# Load data
+load(DATASET_FILE)
+
+# Set Locale Time C 
+lct <- Sys.getlocale("LC_TIME"); 
+Sys.setlocale("LC_TIME", "C")
+
+# Define relevant variables - making numeric variables into factors when they should be.
+terremotosSpainRaw$log10Depth <- log10(terremotosSpainRaw$Depth + 1)
+terremotosSpainRaw$time <- strptime(terremotosSpainRaw$DateTime, "%Y-%m-%dT%H:%M:%S")
+
+#Set default Locale Time 
+Sys.setlocale("LC_TIME", lct)
+
+## This is the data set we will use
+terremotosSpain <- terremotosSpainRaw
+```
+
+
+------
+
+## Exploratory analysis
+
+### Get minimum and maximum times and date downloaded (Methods/Data Collection)
+
+```{r, dependson="loadData"}
+min(terremotosSpain$time)
+max(terremotosSpain$time)
+dateDownloaded
+```
+
+### Find number of missing values/check ranges (Results paragraph 1)
+
+```{r, dependson="loadData"}
+sum(is.na(terremotosSpain))
+summary(terremotosSpain)
+```
+
+### Look at patterns over time 
+```{r, dependson="loadData"}
+plot(terremotosSpain$time,terremotosSpain$Magnitude,pch=19)
+plot(terremotosSpain$time,terremotosSpain$Depth,pch=19)
+```
+
+
+### Look at distribution of magnitudes (Results paragraph 2)
+```{r, dependson="loadData"}
+mean(terremotosSpain$Magnitude < 3, na.rm=TRUE)
+mean(terremotosSpain$Magnitude > 3 & terremotosSpain$Magnitude < 5, na.rm=TRUE)
+```
+Most earthquakes are small (< 3) or medium (>3 and < 5)
+
+
+### Look at distribution of depths (Results paragraph 2)
+
+```{r, dependson="loadData"}
+hist(terremotosSpain$Depth,col="grey")
+hist(terremotosSpain$log10Depth,col="grey")
+```
+
+### Map of Spain 
+```{r, dependson="loadData"}
+peninsulaSpain.map <- get_map( location = c(-9.5, 36, 3.5, 44), 
+            color = "color", maptype = "roadmap")
+
+# le añado puntos
+ggmap(peninsulaSpain.map) +
+  geom_point(aes(x = Longitude, y = Latitude,
+                 size = Magnitude),
+             data = terremotosSpain, colour = 'red',
+             alpha = 0.2)
+```
