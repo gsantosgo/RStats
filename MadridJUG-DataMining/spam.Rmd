@@ -1,0 +1,208 @@
+
+Email: Spam or Not Spam  (CLASSIFICATION PROBLEM)
+========================================================
+This a classification problem (machine learning). 
+
+More info:  
+  http://archive.ics.uci.edu/ml/machine-learning-databases/spambase/  
+  http://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.names  
+  
+  57 predictors  
+  1 class (spam=1,email=0)   
+
+******
+#### May 9, 2013
+#### Jose Maria Gomez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
+#### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
+#### This script is licensed under the GPLv2 license http://www.gnu.org/licenses/gpl.html
+----------------------------------------------------------------
+
+## Preliminaries
+### Set Working Directory
+```{r working directory}
+getwd()
+WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+setwd(WORKING_DIR)
+getwd()
+```
+
+### Load libraries/data/create new variables
+
+```{r loadData}
+#install.packages(c("RColorBrewer","gridBase",ElemStatLearn","foreign","tree","rpart","maptree","class","ROCR)) 
+library(RColorBrewer)
+library(gridBase)
+library(RColorBrewer)
+library(ElemStatLearn)
+library(foreign)
+library(tree)
+library(rpart)
+library(maptree)
+#install.packages("class") #not work in  2.15.2 
+#library(class) #k Nearest Neighbors
+library(e1071) # Support Vector Machine 
+library(ROCR)
+
+### Load data
+DATASET <- spam 
+```
+
+### Set Color
+```{r}
+COLOR_SYSTEM <- "Set3"
+COLORS <- brewer.pal(10,COLOR_SYSTEM)
+PAL <- colorRampPalette(COLORS)
+```
+
+------
+
+## Exploratory analysis
+
+### Look at the data set
+
+```{r, dependson="loadData"}
+head(DATASET)
+dim(DATASET)
+nrow(DATASET)
+ncol(DATASET)
+colnames(DATASET)
+sapply(DATASET[1,], class)
+```
+
+
+### Find number of missing values/check ranges
+
+```{r, dependson="loadData"}
+sum(is.na(DATASET))
+summary(DATASET)
+```
+
+
+### Change Column Names 
+```{r, dependson="loadData"}
+newColNames <- c("word_freq_make",
+"word_freq_address",
+"word_freq_all",
+"word_freq_3d",
+"word_freq_our",
+"word_freq_over",
+"word_freq_remove",
+"word_freq_internet",
+"word_freq_order",
+"word_freq_mail",
+"word_freq_receive",
+"word_freq_will",
+"word_freq_people",
+"word_freq_report",
+"word_freq_addresses",
+"word_freq_free",
+"word_freq_business",
+"word_freq_email",
+"word_freq_you",
+"word_freq_credit",
+"word_freq_your",
+"word_freq_font",
+"word_freq_000",
+"word_freq_money",
+"word_freq_hp",
+"word_freq_hpl", 
+"word_freq_george",
+"word_freq_650",
+"word_freq_lab",
+"word_freq_labs",
+"word_freq_telnet",
+"word_freq_857",
+"word_freq_data",
+"word_freq_415", 
+"word_freq_85",
+"word_freq_technology",
+"word_freq_1999",
+"word_freq_parts",
+"word_freq_pm",
+"word_freq_direct", 
+"word_freq_cs",
+"word_freq_meeting",
+"word_freq_original",
+"word_freq_project",
+"word_freq_re",
+"word_freq_edu",
+"word_freq_table",
+"word_freq_conference",
+"char_freq_ch;",
+"char_freq_ch(",
+"char_freq_ch[",
+"char_freq_ch!",
+"char_freq_ch$",
+"char_freq_ch#",
+"capital_run_length_average",
+"capital_run_length_longest",
+"capital_run_length_total",
+"spam")
+length(newColNames)
+colnames(DATASET) <- newColNames
+colnames(DATASET)
+```
+
+### The Class Label
+```{r, dependson="loadData"}
+class(DATASET$spam)
+levels(DATASET$spam)
+```
+
+
+### Numbers of Email in Dataset
+```{r, dependson="loadData"}
+result <- table(DATASET$spam)
+numEmail <- result[["email"]]
+numEmail
+(numEmail/nrow(DATASET))*100
+```
+
+### Numbers of Spam in Dataset
+```{r, dependson="loadData"}
+numSpam <- result[["spam"]]
+numSpam
+(numSpam/nrow(DATASET))*100
+```
+
+### Numbers of Email vs. Numbers of Spam in DataSet
+```{r, dependson="loadData"}
+resTable <- table(DATASET$spam)
+par(mfrow=c(1,2))
+par(mar=c(5, 4, 4, 2) + 0.1) # increase y-axis margin.
+plot <- plot(DATASET$spam,col=PAL(2), main="Email vs. Spam", ylim=c(0,4000), ylab="Examples Number")
+text(x=plot,y=resTable+200, labels=resTable)
+percentage <- round(resTable/sum(resTable)*100)
+labels <- paste(row.names(resTable), percentage) # add percents to labels
+labels <- paste(labels,"%",sep="") # ad % to labels
+pie(resTable, labels=labels,col=PAL(2),main="Email vs. Spam")
+```
+
+
+### Average percentage of words or characters 
+ Average percentage of words or characters in an email message
+ equal to the indicated word or character. We have chosen the words and characters
+ showing the largest difference between spam and email.
+```{r, dependson="loadData"}
+dataset.email <- sapply(DATASET[which(DATASET$spam == "email"), 1:54], function(x)ifelse(is.numeric(x), round(mean(x),2), NA))
+dataset.spam <- sapply(DATASET[which(DATASET$spam == "spam"), 1:54], function(x)ifelse(is.numeric(x), round(mean(x),2), NA))
+
+dataset.email.order <- dataset.email[order(-dataset.email)[1:10]]
+dataset.spam.order <- dataset.spam[order(-dataset.spam)[1:10]]
+
+par(mfrow=c(1,2))
+par(mar=c(8, 4, 4, 2) + 0.1) # increase y-axis margin.
+plot <- barplot(dataset.email.order, col=PAL(10), main='Email: Average Percentage', names.arg="", ylab="Percentage Relative (%)") 
+#text(x=plot,y=dataset.email.order-0.1, labels=dataset.email.order, cex=0.6)
+vps <- baseViewports()
+pushViewport(vps$inner, vps$figure, vps$plot)
+grid.text(names(dataset.email.order),x = unit(plot, "native"), y=unit(-1, "lines"),just="right", rot=50)
+popViewport(3)
+
+plot <- barplot(dataset.spam.order, col=PAL(10), main='Spam: Average Percentage', names.arg="", ylab="Percentage Relative (%)") 
+#text(x=plot,y=dataset.spam.order-0.1, labels=dataset.spam.order, cex=0.6)
+vps <- baseViewports()
+pushViewport(vps$inner, vps$figure, vps$plot)
+grid.text(names(dataset.spam.order),x = unit(plot, "native"), y=unit(-1, "lines"),just="right", rot=50)
+popViewport(3)
+```
