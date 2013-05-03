@@ -1,0 +1,154 @@
+![alt text](logo/logoMadridJUG.png) Madrid Java User Group (Madrid JUG)
+
+Loans Lending Club  (REGRESSION PROBLEM) MULTIVARIATE
+========================================================
+  This is a regression problem (machine learning)
+
+******
+#### May 9, 2013
+#### Jose Maria Gomez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
+#### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
+#### This script is licensed under the GPLv2 license http://www.gnu.org/licenses/gpl.html
+----------------------------------------------------------------
+
+## Preliminaries
+### Set Working Directory
+```{r working directory}
+getwd()
+WORKING_DIR <- "~/R/RStats/MadridJUG-DataMining/" 
+#WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+DATASET_FILE <- "./data/loansData.csv"
+FIGURES_DIR <- "./figures/"
+setwd(WORKING_DIR)
+getwd()
+```
+
+### Load libraries/data/create new variables
+
+```{r loadData}
+### Load Libraries 
+#install.packages(c("knitr","RColorBrewer","car","psych","stringr","visreg")) 
+library(knitr)
+library(RColorBrewer)
+library(car)
+library(psych)
+library(stringr)
+library(visreg)
+
+### Set Color
+# colorRampPalette(COLORS) ( 4 ) ## (n)
+CUSTOM_COLORS <- colorRampPalette(colors=COLORS)
+CUSTOM_COLORS_PLOT <- colorRampPalette(brewer.pal(10,"Set3"))
+# Figures Label
+opts_chunk$set(echo=TRUE, fig.path='figures/plot-loans-')
+#opts_chunk$set(echo=FALSE, fig.path='figures/plot-loans-', cache=TRUE)
+
+### Load data
+loansRaw <- read.csv(DATASET_FILE)
+```
+
+------
+
+## Exploratory analysis
+
+### Look at the TRAINING data set 
+
+```{r, dependson="loadData"}
+head(loansRaw)
+summary(loansRaw)
+sapply(loansRaw[1,], class)
+sapply(loansRaw[,1:14], summary)
+```
+
+### Transformation. Variables - Factor to Numeric 
+```{r, dependson="loadData"}
+loansRaw$Interest.Rate <- as.numeric(sub("[^0-9\\.]","",loansRaw$Interest.Rate))
+loansRaw$Debt.To.Income.Ratio <- as.numeric(sub("[^0-9\\.]","",loansRaw$Debt.To.Income.Ratio))
+```
+
+### Find number of missing values/check ranges
+```{r, dependson="loadData"}
+sum(is.na(loansRaw))
+which(is.na(loansRaw), arr.ind=TRUE)
+```
+
+### Remove missing values (NA) 
+```{r, dependson="loadData"}
+loansRaw <- loansRaw[complete.cases(loansRaw),]
+dim(loansRaw)
+levels(loansRaw$Employment.Length)
+sum(loansRaw$Employment.Length == "n/a")
+which(loansRaw == "n/a" , arr.ind=TRUE)
+```
+
+### Transformation. Skewed 
+```{r, dependson="loadData"}
+loansRaw$log10Amount.Requested <- log10(loansRaw$Amount.Requested+1)
+loansRaw$log10Amount.Funded.By.Investors <- log10(loansRaw$Amount.Funded.By.Investors+1)
+loansRaw$log10Monthly.Income <- log10(loansRaw$Monthly.Income+1)
+loansRaw$log10Open.CREDIT.Lines <- log10(loansRaw$Open.CREDIT.Lines+1)
+loansRaw$log10Revolving.CREDIT.Balance <- log10(loansRaw$Revolving.CREDIT.Balance+1)
+loansRaw$sqrtInquiries.in.the.Last.6.Months <- sqrt(loansRaw$Inquiries.in.the.Last.6.Months)
+```
+
+### Regression Model 
+```{r, dependson="loadData"}
+lmFitFinal <- lm(Interest.Rate ~ log10Amount.Requested +
+              log10Amount.Funded.By.Investors + 
+              Debt.To.Income.Ratio + 
+              log10Open.CREDIT.Lines + 
+              log10Revolving.CREDIT.Balance + 
+              sqrtInquiries.in.the.Last.6.Months + 
+              Loan.Length +               
+              FICO.Range, data=loansRaw) 
+```
+
+
+### Get the estimates and confidence intervals. The estimate from summary 
+```{r, dependson="loadData"}
+summary(lmFitFinal)
+```
+
+## The confidence interval fron confint
+#confint(lmFit)
+#anova(lmFit)
+#plot(lmFit)
+#summary(lmFit)
+#residualPlots(lmFit)
+
+### Figure making 
+
+```{r, dependson="loadData"}
+## Set up a function that makes colors prettier
+mypar <- function(a=1,b=1,brewer.n=8,brewer.name="Dark2",...){
+  par(mar=c(2.5,2.5,1.6,1.1),mgp=c(1.5,.5,0))
+  par(mfrow=c(a,b),...)
+  palette(brewer.pal(brewer.n,brewer.name))
+}
+
+## Set size of axes
+cx <- 1
+pch <- 19
+
+## Save figure to pdf file
+#pdf(file=paste0(FIGURES_DIR, "finalfigure.pdf"), height=2*6, width=2*6)
+mypar(mfrow=c(2,2))
+#interestRate_FICORange_Means <- tapply(loansRaw$Interest.Rate, loansRaw$FICO.Range, mean, na.rm = TRUE)
+#boxplot(interestRate_FICORange_Means ~ names(interestRate_FICORange_Means), xlab="FICO Score Range ", ylab="Interest Rate",main="")
+#rug(interestRate_FICORange_Means)
+#points(interestRate_FICORange_Means,col="red",pch=pch)
+#lines(interestRate_FICORange_Means)
+
+visreg(lmFitFinal, "log10Amount.Requested", xlab="log10 Amount Requested", ylab="Interest Rate")
+mtext("(a)")
+
+visreg(lmFitFinal, "FICO.Range", xlab="FICO Score Range", ylab="Interest Rate", col=as.factor(loansRaw$FICO.Range))
+mtext("(b)")
+
+visreg(lmFitFinal, "Debt.To.Income.Ratio", xlab="Debt To Income Ratio", ylab="Interest Rate")
+mtext("(c)")
+
+plot(lmFitFinal, which=1)
+mtext("(d)")
+#dev.off()
+```

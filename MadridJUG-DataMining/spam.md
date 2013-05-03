@@ -26,17 +26,19 @@ getwd()
 ```
 
 ```
-## [1] "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+## [1] "/home/gsantos/R/RStats/MadridJUG-DataMining"
 ```
 
 ```r
-WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+WORKING_DIR <- "~/R/RStats/MadridJUG-DataMining"
+# WORKING_DIR <- 'C:/Users/gsantos/R/RStats/MadridJUG-DataMining'
+FIGURES_DIR <- "./figures/"
 setwd(WORKING_DIR)
 getwd()
 ```
 
 ```
-## [1] "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+## [1] "/home/gsantos/R/RStats/MadridJUG-DataMining"
 ```
 
 
@@ -45,13 +47,10 @@ getwd()
 
 ```r
 #
-# install.packages(c('RColorBrewer','gridBase',ElemStatLearn','foreign','tree','rpart','maptree','class','ROCR))
+# install.packages(c('knitr','RColorBrewer','gridBase',ElemStatLearn','foreign','tree','rpart','maptree','class','ROCR))
+library(knitr)
 library(RColorBrewer)
 library(gridBase)
-```
-
-```
-## Warning: package 'gridBase' was built under R version 2.15.3
 ```
 
 ```
@@ -61,35 +60,10 @@ library(gridBase)
 ```r
 library(RColorBrewer)
 library(ElemStatLearn)
-```
-
-```
-## Warning: package 'ElemStatLearn' was built under R version 2.15.3
-```
-
-```r
 library(foreign)
-```
-
-```
-## Warning: package 'foreign' was built under R version 2.15.3
-```
-
-```r
 library(tree)
-```
-
-```
-## Warning: package 'tree' was built under R version 2.15.3
-```
-
-```r
 library(rpart)
 library(maptree)
-```
-
-```
-## Warning: package 'maptree' was built under R version 2.15.3
 ```
 
 ```
@@ -103,15 +77,7 @@ library(e1071)  # Support Vector Machine
 ```
 
 ```
-## Warning: package 'e1071' was built under R version 2.15.3
-```
-
-```
 ## Loading required package: class
-```
-
-```
-## Warning: package 'class' was built under R version 2.15.3
 ```
 
 ```r
@@ -119,121 +85,18 @@ library(ROCR)
 ```
 
 ```
-## Warning: package 'ROCR' was built under R version 2.15.3
-```
-
-```
-## Loading required package: gplots
-```
-
-```
-## Loading required package: gtools
-```
-
-```
-## Attaching package: 'gtools'
-```
-
-```
-## The following object(s) are masked from 'package:e1071':
-## 
-## permutations
-```
-
-```
-## Loading required package: gdata
-```
-
-```
-## gdata: Unable to locate valid perl interpreter gdata: gdata: read.xls()
-## will be unable to read Excel XLS and XLSX files gdata: unless the 'perl='
-## argument is used to specify the location gdata: of a valid perl
-## intrpreter. gdata: gdata: (To avoid display of this message in the future,
-## please gdata: ensure perl is installed and available on the executable
-## gdata: search path.)
-```
-
-```
-## gdata: Unable to load perl libaries needed by read.xls() gdata: to support
-## 'XLX' (Excel 97-2004) files.
-```
-
-```
-## ```
-
-```
-## gdata: Unable to load perl libaries needed by read.xls() gdata: to support
-## 'XLSX' (Excel 2007+) files.
-```
-
-```
-## ```
-
-```
-## gdata: Run the function 'installXLSXsupport()' gdata: to automatically
-## download and install the perl gdata: libaries needed to support Excel XLS
-## and XLSX formats.
-```
-
-```
-## Attaching package: 'gdata'
-```
-
-```
-## The following object(s) are masked from 'package:stats':
-## 
-## nobs
-```
-
-```
-## The following object(s) are masked from 'package:utils':
-## 
-## object.size
-```
-
-```
-## Loading required package: caTools
-```
-
-```
-## Loading required package: bitops
-```
-
-```
-## Loading required package: KernSmooth
-```
-
-```
-## KernSmooth 2.23 loaded Copyright M. P. Wand 1997-2009
-```
-
-```
-## Loading required package: MASS
-```
-
-```
-## Attaching package: 'gplots'
-```
-
-```
-## The following object(s) are masked from 'package:stats':
-## 
-## lowess
+## Error: there is no package called 'ROCR'
 ```
 
 ```r
+
+CUSTOM_COLORS_PLOT <- colorRampPalette(brewer.pal(10, "Set3"))
+# Figures Label
+opts_chunk$set(echo = TRUE, fig.path = "figures/plot-spam-")
+# opts_chunk$set(echo=FALSE, fig.path='figures/plot-spam-', cache=TRUE)
 
 ### Load data
 DATASET <- spam
-```
-
-
-### Set Color
-
-```r
-COLOR_SYSTEM <- "Set3"
-COLORS <- brewer.pal(10, COLOR_SYSTEM)
-PAL <- colorRampPalette(COLORS)
 ```
 
 
@@ -350,7 +213,7 @@ sapply(DATASET[1, ], class)
 
 
 
-### Find number of missing values/check ranges (Results paragraph 1)
+### Find number of missing values/check ranges
 
 
 ```r
@@ -474,7 +337,6 @@ summary(DATASET)
 ```
 
 
-
 ### Change Column Names 
 
 ```r
@@ -556,7 +418,6 @@ levels(DATASET$spam)
 ```
 
 
-
 ### Numbers of Email in Dataset
 
 ```r
@@ -570,11 +431,11 @@ numEmail
 ```
 
 ```r
-(numEmail/nrow(DATASET)) * 100
+print(paste0("Percentage: ", round((numEmail/nrow(DATASET)) * 100, 2), "%"))
 ```
 
 ```
-## [1] 60.6
+## [1] "Percentage: 60.6%"
 ```
 
 
@@ -590,11 +451,12 @@ numSpam
 ```
 
 ```r
-(numSpam/nrow(DATASET)) * 100
+
+print(paste0("Percentage: ", round((numSpam/nrow(DATASET)) * 100, 2), "%"))
 ```
 
 ```
-## [1] 39.4
+## [1] "Percentage: 39.4%"
 ```
 
 
@@ -604,16 +466,16 @@ numSpam
 resTable <- table(DATASET$spam)
 par(mfrow = c(1, 2))
 par(mar = c(5, 4, 4, 2) + 0.1)  # increase y-axis margin.
-plot <- plot(DATASET$spam, col = PAL(2), main = "Email vs. Spam", ylim = c(0, 
-    4000), ylab = "Examples Number")
+plot <- plot(DATASET$spam, col = CUSTOM_COLORS_PLOT(2), main = "Email vs. Spam", 
+    ylim = c(0, 4000), ylab = "Examples Number")
 text(x = plot, y = resTable + 200, labels = resTable)
 percentage <- round(resTable/sum(resTable) * 100)
 labels <- paste(row.names(resTable), percentage)  # add percents to labels
 labels <- paste(labels, "%", sep = "")  # ad % to labels
-pie(resTable, labels = labels, col = PAL(2), main = "Email vs. Spam")
+pie(resTable, labels = labels, col = CUSTOM_COLORS_PLOT(2), main = "Email vs. Spam")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-7](figures/plot-spam-unnamed-chunk-7.png) 
 
 
 
@@ -633,7 +495,7 @@ dataset.spam.order <- dataset.spam[order(-dataset.spam)[1:10]]
 
 par(mfrow = c(1, 2))
 par(mar = c(8, 4, 4, 2) + 0.1)  # increase y-axis margin.
-plot <- barplot(dataset.email.order, col = PAL(10), main = "Email: Average Percentage", 
+plot <- barplot(dataset.email.order, col = CUSTOM_COLORS_PLOT(10), main = "Email: Average Percentage", 
     names.arg = "", ylab = "Percentage Relative (%)")
 # text(x=plot,y=dataset.email.order-0.1, labels=dataset.email.order,
 # cex=0.6)
@@ -643,7 +505,7 @@ grid.text(names(dataset.email.order), x = unit(plot, "native"), y = unit(-1,
     "lines"), just = "right", rot = 50)
 popViewport(3)
 
-plot <- barplot(dataset.spam.order, col = PAL(10), main = "Spam: Average Percentage", 
+plot <- barplot(dataset.spam.order, col = CUSTOM_COLORS_PLOT(10), main = "Spam: Average Percentage", 
     names.arg = "", ylab = "Percentage Relative (%)")
 # text(x=plot,y=dataset.spam.order-0.1, labels=dataset.spam.order,
 # cex=0.6)
@@ -654,5 +516,237 @@ grid.text(names(dataset.spam.order), x = unit(plot, "native"), y = unit(-1,
 popViewport(3)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-8](figures/plot-spam-unnamed-chunk-8.png) 
+
+
+------
+
+## TRAINING and TESTING data set for Classification 
+
+
+```r
+set.seed(1423)
+index <- 1:nrow(DATASET)
+trainIndex <- sample(index, trunc(length(index) * 0.666666666666667))
+```
+
+
+
+### TRAINING data set 
+
+```r
+DATASET.train <- DATASET[trainIndex, ]
+print(paste0("Percentage: ", round((nrow(DATASET.train)/nrow(DATASET)) * 100, 
+    2), " %"))
+```
+
+```
+## [1] "Percentage: 66.66 %"
+```
+
+```r
+
+# Email vs. Spam
+resTable <- table(DATASET.train$spam)
+par(mfrow = c(1, 1))
+par(mar = c(5, 4, 4, 2) + 0.1)  # increase y-axis margin.
+plot <- plot(DATASET.train$spam, col = CUSTOM_COLORS_PLOT(6), main = "Email vs. Spam (Training Data Set)", 
+    ylim = c(0, max(resTable) + 100), ylab = "Examples Number")
+text(x = plot, y = resTable + 50, labels = resTable, cex = 0.75)
+```
+
+![plot of chunk unnamed-chunk-10](figures/plot-spam-unnamed-chunk-101.png) 
+
+```r
+par(mfrow = c(1, 1))
+percentage <- round(resTable/sum(resTable) * 100)
+labels <- paste0(row.names(resTable), " (", percentage, "%) ")  # add percents to labels
+pie(resTable, labels = labels, col = CUSTOM_COLORS_PLOT(10), main = "Email vs. Spam (Training Data Set)")
+```
+
+![plot of chunk unnamed-chunk-10](figures/plot-spam-unnamed-chunk-102.png) 
+
+
+### TESTING data set 
+
+```r
+DATASET.test <- DATASET[-trainIndex, ]
+print(paste0("Percentage: ", round((nrow(DATASET.test)/nrow(DATASET)) * 100, 
+    2), " %"))
+```
+
+```
+## [1] "Percentage: 33.34 %"
+```
+
+```r
+
+# Email vs. Spam
+resTable <- table(DATASET.test$spam)
+par(mfrow = c(1, 1))
+par(mar = c(5, 4, 4, 2) + 0.1)  # increase y-axis margin.
+plot <- plot(DATASET.test$spam, col = CUSTOM_COLORS_PLOT(6), main = "Email vs. Spam (Testing Data Set)", 
+    ylim = c(0, max(resTable) + 100), ylab = "Examples Number")
+text(x = plot, y = resTable + 50, labels = resTable, cex = 0.75)
+```
+
+![plot of chunk unnamed-chunk-11](figures/plot-spam-unnamed-chunk-111.png) 
+
+```r
+par(mfrow = c(1, 1))
+percentage <- round(resTable/sum(resTable) * 100)
+labels <- paste0(row.names(resTable), " (", percentage, "%) ")  # add percents to labels
+pie(resTable, labels = labels, col = CUSTOM_COLORS_PLOT(10), main = "Email vs. Spam (Testing Data Set)")
+```
+
+![plot of chunk unnamed-chunk-11](figures/plot-spam-unnamed-chunk-112.png) 
+
+
+------
+
+## Classification. Predictive Model. RPart (Recursive Partitioning and Regression Trees) Algorithm 
+
+
+```r
+pc <- proc.time()
+model.rpart <- rpart(spam ~ ., method = "class", data = DATASET.train)
+proc.time() - pc
+```
+
+```
+##    user  system elapsed 
+##   1.184   0.020   1.251
+```
+
+```r
+printcp(model.rpart)
+```
+
+```
+## 
+## Classification tree:
+## rpart(formula = spam ~ ., data = DATASET.train, method = "class")
+## 
+## Variables actually used in tree construction:
+## [1] capital_run_length_total char_freq_ch!           
+## [3] char_freq_ch$            word_freq_hp            
+## [5] word_freq_remove        
+## 
+## Root node error: 1206/3067 = 0.39
+## 
+## n= 3067 
+## 
+##      CP nsplit rel error xerror  xstd
+## 1 0.485      0      1.00   1.00 0.022
+## 2 0.142      1      0.51   0.56 0.019
+## 3 0.057      2      0.37   0.48 0.018
+## 4 0.031      3      0.32   0.36 0.016
+## 5 0.026      4      0.29   0.33 0.015
+## 6 0.010      5      0.26   0.29 0.015
+```
+
+```r
+
+plot(model.rpart, uniform = TRUE, main = "Classification (RPART). Classification Tree for SPAM")
+text(model.rpart, all = TRUE, cex = 0.75)
+```
+
+![plot of chunk model_rpart](figures/plot-spam-model_rpart1.png) 
+
+```r
+draw.tree(model.rpart, cex = 0.5, nodeinfo = TRUE, col = gray(0:8/8))
+```
+
+![plot of chunk model_rpart](figures/plot-spam-model_rpart2.png) 
+
+
+### Confusion Matrix (RPart)
+
+```r
+prediction.rpart <- predict(model.rpart, newdata = DATASET.test, type = "class")
+table(`Actual Class` = DATASET.test$spam, `Predicted Class` = prediction.rpart)
+```
+
+```
+##             Predicted Class
+## Actual Class email spam
+##        email   876   51
+##        spam    110  497
+```
+
+```r
+error.rate.rpart <- sum(DATASET.test$spam != prediction.rpart)/nrow(DATASET.test)
+print(paste0("Accuary (Precision): ", 1 - error.rate.rpart))
+```
+
+```
+## [1] "Accuary (Precision): 0.895045632333768"
+```
+
+
+------
+
+## Classification. Predictive Model. SVM (Support Vector Machine) Algorithm 
+
+```r
+pc <- proc.time()
+model.svm <- svm(spam ~ ., method = "class", data = DATASET.train)
+proc.time() - pc
+```
+
+```
+##    user  system elapsed 
+##   3.160   0.040   3.316
+```
+
+```r
+summary(model.svm)
+```
+
+```
+## 
+## Call:
+## svm(formula = spam ~ ., data = DATASET.train, method = "class")
+## 
+## 
+## Parameters:
+##    SVM-Type:  C-classification 
+##  SVM-Kernel:  radial 
+##        cost:  1 
+##       gamma:  0.01754 
+## 
+## Number of Support Vectors:  961
+## 
+##  ( 449 512 )
+## 
+## 
+## Number of Classes:  2 
+## 
+## Levels: 
+##  email spam
+```
+
+
+### Confusion Matrix (SVM)
+
+```r
+prediction.svm <- predict(model.svm, newdata = DATASET.test, type = "class")
+table(`Actual Class` = DATASET.test$spam, `Predicted Class` = prediction.svm)
+```
+
+```
+##             Predicted Class
+## Actual Class email spam
+##        email   888   39
+##        spam     70  537
+```
+
+```r
+error.rate.svm <- sum(DATASET.test$spam != prediction.svm)/nrow(DATASET.test)
+print(paste0("Accuary (Precision): ", 1 - error.rate.svm))
+```
+
+```
+## [1] "Accuary (Precision): 0.928943937418514"
+```
 

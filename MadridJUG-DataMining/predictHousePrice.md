@@ -6,8 +6,8 @@ Predicting House Price (REGRESSION PROBLEM) UNIVARIATE
 This a regression problem (machine learning). The Predict **House Price** depends **House Size**
 ******
 #### May 9, 2013
-#### Jose Maria Gómez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
-#### Guillermo Santos Garcif­a [@gsantosgo](http://twitter.com/gsantosgo)
+#### Jose Maria Gomez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
+#### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
 #### This script is licensed under the GPLv2 license http://www.gnu.org/licenses/gpl.html
 ----------------------------------------------------------------
 
@@ -42,6 +42,19 @@ model.regression
 ```
 
 
+
+```r
+predict(model.regression)
+```
+
+```
+##      1      2      3      4      5      6      7      8      9     10 
+##  67.19  70.73  74.27  77.81  88.43  88.43  91.96  95.50 102.58 109.66 
+##     11     12     13     14     15 
+## 123.81 127.35 134.43 152.12 162.74
+```
+
+
 Plot:
 
 ```r
@@ -50,28 +63,25 @@ plot(housePrices$size, housePrices$price, xlab = "Square meters", ylab = "$ Pric
 abline(model.regression, col = 2, lwd = 3)
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
 
 ### Predicting House Price of 120 squared meters?
 
 ```r
 sizequery <- 120
+# newdata <- data.frame(price=sizequery) predict.lm(model.regression,
+# newdata, interval='confidence')
 result <- model.regression$coefficients[1] + sizequery * model.regression$coefficients[2]
-plot(housePrices$size, housePrices$price, xlab = "Square meters", ylab = "$ Price (K)", 
-    main = "Predict House Price", pch = 19)
-abline(model.regression, col = 2, lwd = 3)
-abline(h = result, v = sizequery, col = "blue", lty = "dotdash")
+print(paste0("Predicting House Price of 120 squared meters: ", round(result, 
+    2)))
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
-
-
-### Predicting House Price of 300 squared meters?
+```
+## [1] "Predicting House Price of 120 squared meters: 81.35"
+```
 
 ```r
-sizequery <- 300
-result <- model.regression$coefficients[1] + sizequery * model.regression$coefficients[2]
 plot(housePrices$size, housePrices$price, xlab = "Square meters", ylab = "$ Price (K)", 
     main = "Predict House Price", pch = 19)
 abline(model.regression, col = 2, lwd = 3)
@@ -79,4 +89,27 @@ abline(h = result, v = sizequery, col = "blue", lty = "dotdash")
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+
+
+### Predicting House Price of 300 squared meters?
+
+```r
+sizequery <- 300
+result <- model.regression$coefficients[1] + sizequery * model.regression$coefficients[2]
+print(paste0("Predicting House Price of 300 squared meters: ", round(result, 
+    2)))
+```
+
+```
+## [1] "Predicting House Price of 300 squared meters: 145.04"
+```
+
+```r
+plot(housePrices$size, housePrices$price, xlab = "Square meters", ylab = "$ Price (K)", 
+    main = "Predict House Price", pch = 19)
+abline(model.regression, col = 2, lwd = 3)
+abline(h = result, v = sizequery, col = "blue", lty = "dotdash")
+```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 

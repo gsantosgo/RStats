@@ -1,15 +1,25 @@
 ![alt text](logo/logoMadridJUG.png) Madrid Java User Group (Madrid JUG)
 
-
 Predicting House Price (REGRESSION PROBLEM) UNIVARIATE
 ========================================================
 This a regression problem (machine learning). The Predict **House Price** depends **House Size**
 ******
 #### May 9, 2013
-#### Jose Maria Gómez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
-#### Guillermo Santos Garciƒ­a [@gsantosgo](http://twitter.com/gsantosgo)
+#### Jose Maria Gomez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
+#### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
 #### This script is licensed under the GPLv2 license http://www.gnu.org/licenses/gpl.html
+
 ----------------------------------------------------------------
+
+### Load libraries/data/create new variables
+
+```{r loadData}
+library(knitr) # Markdown 
+
+# Figures Label
+opts_chunk$set(fig.path='figures/plot-predicthouse-')
+#opts_chunk$set(echo=FALSE, fig.path='figures/plot-predicthouse-', cache=TRUE)
+```
 
 ### Data    
 ```{r}
@@ -27,6 +37,10 @@ model.regression <- lm(housePrices$price ~ housePrices$size)
 model.regression
 ```
 
+```{r}
+predict(model.regression)
+```
+
 Plot:
 ```{r fig.width=7, fig.height=6}
 plot(housePrices$size, housePrices$price, xlab="Square meters", ylab="$ Price (K)", main="Predict House Price",pch=19)
@@ -36,7 +50,10 @@ abline(model.regression, col=2, lwd=3)
 ### Predicting House Price of 120 squared meters?
 ```{r}
 sizequery <- 120
+#newdata <- data.frame(price=sizequery)
+#predict.lm(model.regression, newdata, interval="confidence")
 result <- model.regression$coefficients[1] + sizequery*model.regression$coefficients[2]
+print(paste0("Predicting House Price of 120 squared meters: ", round(result, 2)))
 plot(housePrices$size, housePrices$price, xlab="Square meters", ylab="$ Price (K)", main="Predict House Price",pch=19)
 abline(model.regression, col=2, lwd=3)
 abline(h=result, v=sizequery, col="blue", lty="dotdash")
@@ -46,6 +63,7 @@ abline(h=result, v=sizequery, col="blue", lty="dotdash")
 ```{r}
 sizequery <- 300
 result <- model.regression$coefficients[1] + sizequery*model.regression$coefficients[2]
+print(paste0("Predicting House Price of 300 squared meters: ", round(result, 2)))
 plot(housePrices$size, housePrices$price, xlab="Square meters", ylab="$ Price (K)", main="Predict House Price",pch=19)
 abline(model.regression, col=2, lwd=3)
 abline(h=result, v=sizequery, col="blue", lty="dotdash")

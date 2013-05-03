@@ -3,8 +3,8 @@
 # 
 # May 6, 2013
 # 
-# Jose Mari­a Gomez Hidalgo (@jmgomez) 
-# Guillermo Santos Garci­a (@gsantosgo)
+# Jose Maria Gomez Hidalgo (@jmgomez) 
+# Guillermo Santos Garcia (@gsantosgo)
 # 
 # CLASSIFICATION PROBLEM
 # SPAM or NOT SPAM
@@ -14,10 +14,10 @@
 # http://www.gnu.org/licenses/gpl.html
 # ----------------------------------------------------------------
 getwd()
-WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+WORKING_DIR <- "~/R/RStats/MadridJUG-DataMining"
+#WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
 setwd(WORKING_DIR)
 getwd()
-
 
 ### Load Libraries 
 #install.packages(c("RColorBrewer","gridBase",ElemStatLearn","foreign","tree","rpart","maptree","class","ROCR)) 
@@ -40,6 +40,9 @@ PAL <- colorRampPalette(COLORS)
 
 
 DATASET <- spam 
+
+write.csv(DATASET)
+
 head(DATASET)
 dim(DATASET)
 nrow(DATASET)
@@ -163,26 +166,9 @@ grid.text(names(dataset.spam.order),x = unit(plot, "native"), y=unit(-1, "lines"
 popViewport(3)
 
 
-hist(lifeexp, breaks=5)
-hist(dataset.spam[order(-dataset.spam)[1:10]], breaks = 10)
-hist(dataset.spam[order(-dataset.spam)[1:10]], breaks=10)
-dataset.email[order(-dataset.spam)[1:10]]
-
 par(mar=c(5,8,4,2)) # increase y-axis margin.
 barplot(dataset.spam[order(-dataset.spam)[1:10]], col=rainbow(6), main='Spam: Relative Frequencies', cex.names=0.5)
 names(dataset.spam[order(-dataset.spam)[1:10]])
-
-counts <- table(mtcars$vs, mtcars$gear)
-barplot(counts, main="Car Distribution by Gears and VS",
-        xlab="Number of Gears", col=c("darkblue","red"),
-        legend = rownames(counts), beside=TRUE)
-
-# Fitting Labels
-par(las=2) # make label text perpendicular to axis
-par(mar=c(5,8,4,2)) # increase y-axis margin.
-
-counts <- table(mtcars$gear)
-barplot(counts, main="Car Distribution", horiz=TRUE, names.arg=c("3 Gears", "4 Gears", "5   Gears"), cex.names=0.8)
 
 set.seed(1423)
 index <- 1:nrow(DATASET)
@@ -239,7 +225,6 @@ table("Actual Class"=dataset.test$spam, "Predicted Class"=model.knn)
 ### Classification. SVM (Support Vector Machine)
 ### --------------------------------------------
 pc <- proc.time()
-
 model.svm <- svm(train$spam~., data=dataset.train,)
 proc.time() - pc
 summary(model.svm)

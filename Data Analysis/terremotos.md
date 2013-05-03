@@ -41,88 +41,21 @@ getwd()
 ## [1] "/home/gsantos/R/RStats/Data Analysis"
 ```
 
+```r
+# Figures Label
+opts_chunk$set(echo = FALSE, fig.path = "figures/plot-te-", cache = TRUE)
+```
+
 
 ### Load libraries/data/create new variables
 
-
-```r
-
-# Load libraries install.packages(c('maps','Hmisc','RColorBrewer')
-library(maps)
-library(Hmisc)
-```
-
-```
-## Loading required package: survival
-```
-
-```
-## Loading required package: splines
-```
-
-```
-## Hmisc library by Frank E Harrell Jr
-## 
-## Type library(help='Hmisc'), ?Overview, or ?Hmisc.Overview') to see overall
-## documentation.
-## 
-## NOTE:Hmisc no longer redefines [.factor to drop unused levels when
-## subsetting.  To get the old behavior of Hmisc type dropUnusedLevels().
-```
-
-```
-## Attaching package: 'Hmisc'
-```
-
-```
-## The following object(s) are masked from 'package:survival':
-## 
-## untangle.specials
-```
-
-```
-## The following object(s) are masked from 'package:base':
-## 
-## format.pval, round.POSIXt, trunc.POSIXt, units
-```
-
-```r
-library(RColorBrewer)
-
-# Load data
-load(DATASET_FILE)
-
-# Set Locale Time C
-lct <- Sys.getlocale("LC_TIME")
-Sys.setlocale("LC_TIME", "C")
-```
 
 ```
 ## [1] "C"
 ```
 
-```r
-
-# Define relevant variables - making numeric variables into factors when
-# they should be.
-quakesRaw$latCut <- cut2(quakesRaw$Lat, g = 5)
-quakesRaw$lonCut <- cut2(quakesRaw$Lon, g = 5)
-quakesRaw$nstCut <- cut2(quakesRaw$NST, g = 5)
-quakesRaw$log10Depth <- log10(quakesRaw$Depth + 1)
-quakesRaw$time <- strptime(quakesRaw$Datetime, format = "%A, %B %e, %Y %H:%M:%S")
-
-# Set default Locale Time
-Sys.setlocale("LC_TIME", lct)
-```
-
 ```
 ## [1] "es_ES.UTF-8"
-```
-
-```r
-
-## This is the data set we will use
-quakes <- quakesRaw
 ```
 
 
@@ -134,24 +67,12 @@ quakes <- quakesRaw
 ### Get minimum and maximum times and date downloaded (Methods/Data Collection)
 
 
-```r
-min(quakes$time)
-```
-
 ```
 ## [1] "2013-01-24 20:24:10 CET"
 ```
 
-```r
-max(quakes$time)
-```
-
 ```
 ## [1] "2013-01-31 20:19:09 CET"
-```
-
-```r
-dateDownloaded
 ```
 
 ```
@@ -162,16 +83,8 @@ dateDownloaded
 ### Find number of missing values/check ranges (Results paragraph 1)
 
 
-```r
-sum(is.na(quakes))
-```
-
 ```
 ## [1] 0
-```
-
-```r
-summary(quakes)
 ```
 
 ```
@@ -221,34 +134,15 @@ Latitude, longitude are within normal ranges. Magnitude has nothing above 7, dep
 
 
 ### Look at patterns over time (Results paragraph 1)
-
-```r
-plot(quakes$time, quakes$Magnitude, pch = 19)
-```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-31.png) 
-
-```r
-plot(quakes$time, quakes$Depth, pch = 19)
-```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-32.png) 
+![plot of chunk unnamed-chunk-3](figures/plot-te-unnamed-chunk-31.png) ![plot of chunk unnamed-chunk-3](figures/plot-te-unnamed-chunk-32.png) 
 
 There does not appear to be a time trend in either variable. 
 
 
 ### Look at distribution of magnitudes (Results paragraph 2)
 
-```r
-mean(quakes$Magnitude < 3)
-```
-
 ```
 ## [1] 0.8549
-```
-
-```r
-mean(quakes$Magnitude > 3 & quakes$Magnitude < 5)
 ```
 
 ```
@@ -259,18 +153,7 @@ Most earthquakes are small (< 3) or medium (>3 and < 5)
 
 ### Look at distribution of depths (Results paragraph 2)
 
-
-```r
-hist(quakes$Depth, col = "grey")
-```
-
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-51.png) 
-
-```r
-hist(quakes$log10Depth, col = "grey")
-```
-
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-52.png) 
+![plot of chunk unnamed-chunk-5](figures/plot-te-unnamed-chunk-51.png) ![plot of chunk unnamed-chunk-5](figures/plot-te-unnamed-chunk-52.png) 
 
 
 -------
@@ -279,47 +162,19 @@ hist(quakes$log10Depth, col = "grey")
 
 ### Fit a model with no adjustment (results - paragraph 3)
 
-
-```r
-# Fit model with no adjustment variable
-lmNoAdjust <- lm(quakes$Magnitude ~ quakes$log10Depth)
-
-# Plot residuals, colored by different variables (latitude, longitude,
-# number of sites observing the quake)
-par(mfrow = c(1, 3))
-plot(quakes$log10Depth, lmNoAdjust$residuals, col = quakes$latCut, pch = 19)
-plot(quakes$log10Depth, lmNoAdjust$residuals, col = quakes$lonCut, pch = 19)
-plot(quakes$log10Depth, lmNoAdjust$residuals, col = quakes$nstCut, pch = 19)
-```
-
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-6](figures/plot-te-unnamed-chunk-6.png) 
 
 It appears there are some non-random patterns here.
 
 
 ### Now fit a model with factor adjustment for latitude, longitude, and number of sites (results - paragraph 3)
 
-
-```r
-lmFinal <- lm(quakes$Magnitude ~ quakes$log10Depth + quakes$latCut + quakes$lonCut + 
-    quakes$NST)
-par(mfrow = c(1, 3))
-plot(quakes$log10Depth, lmFinal$residuals, col = quakes$latCut, pch = 19)
-plot(quakes$log10Depth, lmFinal$residuals, col = quakes$lonCut, pch = 19)
-plot(quakes$log10Depth, lmFinal$residuals, col = quakes$nstCut, pch = 19)
-```
-
-![plot of chunk lmFinalChunk](figure/lmFinalChunk.png) 
+![plot of chunk lmFinalChunk](figures/plot-te-lmFinalChunk.png) 
 
 Still some clumpiness of color, but much better than it was. 
 
 ## Get the estimates and confidence intervals
 
-
-```r
-## The estimate from summary
-summary(lmFinal)
-```
 
 ```
 ## 
@@ -352,12 +207,6 @@ summary(lmFinal)
 ## F-statistic:  145 on 10 and 885 DF,  p-value: <2e-16
 ```
 
-```r
-
-## The confidence interval from confint
-confint(lmFinal)
-```
-
 ```
 ##                               2.5 %   97.5 %
 ## (Intercept)                1.391933  1.81684
@@ -378,30 +227,4 @@ confint(lmFinal)
 
 ## Figure making
 
-```r
-lmNoAdjust <- lm(quakes$Magnitude ~ quakes$log10Depth)
-
-## Set up a function that makes colors prettier
-mypar <- function(a = 1, b = 1, brewer.n = 8, brewer.name = "Dark2", ...) {
-    par(mar = c(2.5, 2.5, 1.6, 1.1), mgp = c(1.5, 0.5, 0))
-    par(mfrow = c(a, b), ...)
-    palette(brewer.pal(brewer.n, brewer.name))
-}
-
-## Set size of axes
-cx = 1.3
-
-## Save figure to pdf file
-
-pdf(file = paste0(FIGURES_DIR, "finalfigure.pdf"), height = 4, width = 3 * 4)
-mypar(mfrow = c(1, 3))
-
-hist(quakes$Depth, breaks = 100, col = 1, xlab = "Depth (km)", ylab = "Frequency", 
-    main = "", cex.axis = cx, cex.lab = cx)
-plot(quakes$log10Depth, lmNoAdjust$residuals, col = quakes$latCut, pch = 19, 
-    xlab = "Log Base 10 Depth (km)", ylab = "No Adjustment Residuals", cex.axis = cx, 
-    cex.lab = cx)
-plot(quakes$log10Depth, lmFinal$residuals, col = quakes$latCut, pch = 19, xlab = "Log Base 10 Depth (km)", 
-    ylab = "Full Model Residuals", cex.axis = cx, cex.lab = cx)
-```
 

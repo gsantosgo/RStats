@@ -27,6 +27,8 @@ DATASET_FILE <- "./data/quakesRaw.rda"
 FIGURES_DIR <- "./figures/"
 setwd(WORKING_DIR)
 getwd()
+# Figures Label
+opts_chunk$set(echo=FALSE, fig.path='figures/plot-te-', cache=TRUE)
 ```
 
 ### Load libraries/data/create new variables

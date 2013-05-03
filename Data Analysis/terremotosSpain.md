@@ -35,54 +35,22 @@ getwd()
 ## [1] "/home/gsantos/R/RStats/Data Analysis"
 ```
 
+```r
+# Figures Label
+opts_chunk$set(echo = FALSE, fig.path = "figures/plot-ts-", cache = TRUE)
+```
+
 
 
 ### Load libraries/data/create new variables
 
 
-```r
-
-# Load libraries install.packages('ggmap')
-library(ggmap)
-```
-
-```
-## Loading required package: ggplot2
-```
-
-```r
-
-# Load data
-load(DATASET_FILE)
-
-# Set Locale Time C
-lct <- Sys.getlocale("LC_TIME")
-Sys.setlocale("LC_TIME", "C")
-```
-
 ```
 ## [1] "C"
 ```
 
-```r
-
-# Define relevant variables - making numeric variables into factors when
-# they should be.
-terremotosSpainRaw$log10Depth <- log10(terremotosSpainRaw$Depth + 1)
-terremotosSpainRaw$time <- strptime(terremotosSpainRaw$DateTime, "%Y-%m-%dT%H:%M:%S")
-
-# Set default Locale Time
-Sys.setlocale("LC_TIME", lct)
-```
-
 ```
 ## [1] "es_ES.UTF-8"
-```
-
-```r
-
-## This is the data set we will use
-terremotosSpain <- terremotosSpainRaw
 ```
 
 
@@ -94,24 +62,12 @@ terremotosSpain <- terremotosSpainRaw
 ### Get minimum and maximum times and date downloaded (Methods/Data Collection)
 
 
-```r
-min(terremotosSpain$time)
-```
-
 ```
 ## [1] "2000-03-23 14:33:36 CET"
 ```
 
-```r
-max(terremotosSpain$time)
-```
-
 ```
 ## [1] "2013-03-23 02:57:39 CET"
-```
-
-```r
-dateDownloaded
 ```
 
 ```
@@ -122,16 +78,8 @@ dateDownloaded
 ### Find number of missing values/check ranges (Results paragraph 1)
 
 
-```r
-sum(is.na(terremotosSpain))
-```
-
 ```
 ## [1] 31126
-```
-
-```r
-summary(terremotosSpain)
 ```
 
 ```
@@ -179,33 +127,14 @@ summary(terremotosSpain)
 
 
 ### Look at patterns over time 
-
-```r
-plot(terremotosSpain$time, terremotosSpain$Magnitude, pch = 19)
-```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-31.png) 
-
-```r
-plot(terremotosSpain$time, terremotosSpain$Depth, pch = 19)
-```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-32.png) 
+![plot of chunk unnamed-chunk-3](figures/plot-ts-unnamed-chunk-31.png) ![plot of chunk unnamed-chunk-3](figures/plot-ts-unnamed-chunk-32.png) 
 
 
 
 ### Look at distribution of magnitudes (Results paragraph 2)
 
-```r
-mean(terremotosSpain$Magnitude < 3, na.rm = TRUE)
-```
-
 ```
 ## [1] 0.7514
-```
-
-```r
-mean(terremotosSpain$Magnitude > 3 & terremotosSpain$Magnitude < 5, na.rm = TRUE)
 ```
 
 ```
@@ -217,26 +146,10 @@ Most earthquakes are small (< 3) or medium (>3 and < 5)
 
 ### Look at distribution of depths (Results paragraph 2)
 
-
-```r
-hist(terremotosSpain$Depth, col = "grey")
-```
-
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-51.png) 
-
-```r
-hist(terremotosSpain$log10Depth, col = "grey")
-```
-
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-52.png) 
+![plot of chunk unnamed-chunk-5](figures/plot-ts-unnamed-chunk-51.png) ![plot of chunk unnamed-chunk-5](figures/plot-ts-unnamed-chunk-52.png) 
 
 
 ### Map of Spain 
-
-```r
-peninsulaSpain.map <- get_map(location = c(-9.5, 36, 3.5, 44), color = "color", 
-    maptype = "roadmap")
-```
 
 ```
 ## Warning: bounding box given to google - spatial extent only approximate.
@@ -255,16 +168,9 @@ peninsulaSpain.map <- get_map(location = c(-9.5, 36, 3.5, 44), color = "color",
 ## Google Maps API Terms of Service : http://developers.google.com/maps/terms
 ```
 
-```r
-
-# le añado puntos
-ggmap(peninsulaSpain.map) + geom_point(aes(x = Longitude, y = Latitude, size = Magnitude), 
-    data = terremotosSpain, colour = "red", alpha = 0.2)
-```
-
 ```
 ## Warning: Removed 381 rows containing missing values (geom_point).
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-6](figures/plot-ts-unnamed-chunk-6.png) 
 

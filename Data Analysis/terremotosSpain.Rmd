@@ -21,6 +21,8 @@ DATASET_FILE <- "./data/terremotosSpain.rda"
 FIGURES_DIR <- "./figures/"
 setwd(WORKING_DIR)
 getwd()
+# Figures Label
+opts_chunk$set(echo=FALSE, fig.path='figures/plot-ts-', cache=TRUE)
 ```
 
 

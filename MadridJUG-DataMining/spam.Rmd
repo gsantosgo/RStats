@@ -1,3 +1,4 @@
+![alt text](logo/logoMadridJUG.png) Madrid Java User Group (Madrid JUG)
 
 Email: Spam or Not Spam  (CLASSIFICATION PROBLEM)
 ========================================================
@@ -21,7 +22,9 @@ More info:
 ### Set Working Directory
 ```{r working directory}
 getwd()
-WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+WORKING_DIR <- "~/R/RStats/MadridJUG-DataMining"
+#WORKING_DIR <- "C:/Users/gsantos/R/RStats/MadridJUG-DataMining"
+FIGURES_DIR <- "./figures/"
 setwd(WORKING_DIR)
 getwd()
 ```
@@ -29,7 +32,8 @@ getwd()
 ### Load libraries/data/create new variables
 
 ```{r loadData}
-#install.packages(c("RColorBrewer","gridBase",ElemStatLearn","foreign","tree","rpart","maptree","class","ROCR)) 
+#install.packages(c("knitr","RColorBrewer","gridBase",ElemStatLearn","foreign","tree","rpart","maptree","class","ROCR)) 
+library(knitr)
 library(RColorBrewer)
 library(gridBase)
 library(RColorBrewer)
@@ -43,15 +47,14 @@ library(maptree)
 library(e1071) # Support Vector Machine 
 library(ROCR)
 
+CUSTOM_COLORS_PLOT <- colorRampPalette(brewer.pal(10,"Set3"))
+# Figures Label
+opts_chunk$set(echo=TRUE, fig.path='figures/plot-spam-')
+# 
+# opts_chunk$set(echo=FALSE, fig.path='figures/plot-spam-', cache=TRUE)
+
 ### Load data
 DATASET <- spam 
-```
-
-### Set Color
-```{r}
-COLOR_SYSTEM <- "Set3"
-COLORS <- brewer.pal(10,COLOR_SYSTEM)
-PAL <- colorRampPalette(COLORS)
 ```
 
 ------
@@ -76,7 +79,6 @@ sapply(DATASET[1,], class)
 sum(is.na(DATASET))
 summary(DATASET)
 ```
-
 
 ### Change Column Names 
 ```{r, dependson="loadData"}
@@ -149,20 +151,20 @@ class(DATASET$spam)
 levels(DATASET$spam)
 ```
 
-
 ### Numbers of Email in Dataset
 ```{r, dependson="loadData"}
 result <- table(DATASET$spam)
 numEmail <- result[["email"]]
 numEmail
-(numEmail/nrow(DATASET))*100
+print(paste0("Percentage: ", round((numEmail/nrow(DATASET))*100,2), "%"))
 ```
 
 ### Numbers of Spam in Dataset
 ```{r, dependson="loadData"}
 numSpam <- result[["spam"]]
 numSpam
-(numSpam/nrow(DATASET))*100
+
+print(paste0("Percentage: ", round((numSpam/nrow(DATASET))*100,2), "%"))
 ```
 
 ### Numbers of Email vs. Numbers of Spam in DataSet
@@ -170,12 +172,12 @@ numSpam
 resTable <- table(DATASET$spam)
 par(mfrow=c(1,2))
 par(mar=c(5, 4, 4, 2) + 0.1) # increase y-axis margin.
-plot <- plot(DATASET$spam,col=PAL(2), main="Email vs. Spam", ylim=c(0,4000), ylab="Examples Number")
+plot <- plot(DATASET$spam,col=CUSTOM_COLORS_PLOT(2), main="Email vs. Spam", ylim=c(0,4000), ylab="Examples Number")
 text(x=plot,y=resTable+200, labels=resTable)
 percentage <- round(resTable/sum(resTable)*100)
 labels <- paste(row.names(resTable), percentage) # add percents to labels
 labels <- paste(labels,"%",sep="") # ad % to labels
-pie(resTable, labels=labels,col=PAL(2),main="Email vs. Spam")
+pie(resTable, labels=labels,col=CUSTOM_COLORS_PLOT(2),main="Email vs. Spam")
 ```
 
 
@@ -184,25 +186,111 @@ pie(resTable, labels=labels,col=PAL(2),main="Email vs. Spam")
  equal to the indicated word or character. We have chosen the words and characters
  showing the largest difference between spam and email.
 ```{r, dependson="loadData"}
-dataset.email <- sapply(DATASET[which(DATASET$spam == "email"), 1:54], function(x)ifelse(is.numeric(x), round(mean(x),2), NA))
-dataset.spam <- sapply(DATASET[which(DATASET$spam == "spam"), 1:54], function(x)ifelse(is.numeric(x), round(mean(x),2), NA))
+dataset.email <- sapply(DATASET[which(DATASET$spam == "email"), 1:54], function(x) ifelse(is.numeric(x), round(mean(x),2), NA))
+dataset.spam <- sapply(DATASET[which(DATASET$spam == "spam"), 1:54], function(x) ifelse(is.numeric(x), round(mean(x),2), NA))
 
 dataset.email.order <- dataset.email[order(-dataset.email)[1:10]]
 dataset.spam.order <- dataset.spam[order(-dataset.spam)[1:10]]
 
 par(mfrow=c(1,2))
 par(mar=c(8, 4, 4, 2) + 0.1) # increase y-axis margin.
-plot <- barplot(dataset.email.order, col=PAL(10), main='Email: Average Percentage', names.arg="", ylab="Percentage Relative (%)") 
+plot <- barplot(dataset.email.order, col=CUSTOM_COLORS_PLOT(10), main='Email: Average Percentage', names.arg="", ylab="Percentage Relative (%)") 
 #text(x=plot,y=dataset.email.order-0.1, labels=dataset.email.order, cex=0.6)
 vps <- baseViewports()
 pushViewport(vps$inner, vps$figure, vps$plot)
 grid.text(names(dataset.email.order),x = unit(plot, "native"), y=unit(-1, "lines"),just="right", rot=50)
 popViewport(3)
 
-plot <- barplot(dataset.spam.order, col=PAL(10), main='Spam: Average Percentage', names.arg="", ylab="Percentage Relative (%)") 
+plot <- barplot(dataset.spam.order, col=CUSTOM_COLORS_PLOT(10), main='Spam: Average Percentage', names.arg="", ylab="Percentage Relative (%)") 
 #text(x=plot,y=dataset.spam.order-0.1, labels=dataset.spam.order, cex=0.6)
 vps <- baseViewports()
 pushViewport(vps$inner, vps$figure, vps$plot)
 grid.text(names(dataset.spam.order),x = unit(plot, "native"), y=unit(-1, "lines"),just="right", rot=50)
 popViewport(3)
+```
+
+------
+
+## TRAINING and TESTING data set for Classification 
+
+```{r, dependson="loadData"}
+set.seed(1423)
+index <- 1:nrow(DATASET)
+trainIndex <- sample(index, trunc(length(index)*0.6666666666666667))
+```
+
+
+### TRAINING data set 
+```{r, dependson="loadData"}
+DATASET.train <- DATASET[trainIndex, ]
+print(paste0("Percentage: ", round((nrow(DATASET.train) / nrow(DATASET)) * 100,2), " %"))
+      
+# Email vs. Spam
+resTable <- table(DATASET.train$spam)
+par(mfrow=c(1,1))
+par(mar=c(5, 4, 4, 2) + 0.1) # increase y-axis margin.
+plot <- plot(DATASET.train$spam,col=CUSTOM_COLORS_PLOT(6), main="Email vs. Spam (Training Data Set)", ylim=c(0,max(resTable)+100), ylab="Examples Number")
+text(x=plot,y=resTable+50, labels=resTable, cex=0.75)
+par(mfrow=c(1,1))
+percentage <- round(resTable/sum(resTable)*100)
+labels <- paste0 (row.names(resTable), " (", percentage ,"%) ") # add percents to labels
+pie(resTable, labels=labels,col=CUSTOM_COLORS_PLOT(10),main="Email vs. Spam (Training Data Set)")
+```
+
+### TESTING data set 
+```{r, dependson="loadData"}
+DATASET.test <- DATASET[-trainIndex, ]
+print(paste0("Percentage: ", round((nrow(DATASET.test) / nrow(DATASET)) * 100,2), " %"))
+
+# Email vs. Spam
+resTable <- table(DATASET.test$spam)
+par(mfrow=c(1,1))
+par(mar=c(5, 4, 4, 2) + 0.1) # increase y-axis margin.
+plot <- plot(DATASET.test$spam,col=CUSTOM_COLORS_PLOT(6), main="Email vs. Spam (Testing Data Set)", ylim=c(0,max(resTable)+100), ylab="Examples Number")
+text(x=plot,y=resTable+50, labels=resTable, cex=0.75)
+par(mfrow=c(1,1))
+percentage <- round(resTable/sum(resTable)*100)
+labels <- paste0 (row.names(resTable), " (", percentage ,"%) ") # add percents to labels
+pie(resTable, labels=labels,col=CUSTOM_COLORS_PLOT(10),main="Email vs. Spam (Testing Data Set)")
+```
+
+------
+
+## Classification. Predictive Model. RPart (Recursive Partitioning and Regression Trees) Algorithm 
+
+```{r model_rpart, dependson="loadData"}
+pc <- proc.time()
+model.rpart <- rpart(spam ~ . ,method="class", data=DATASET.train)
+proc.time() - pc
+printcp(model.rpart)
+
+plot(model.rpart, uniform=TRUE, main="Classification (RPART). Classification Tree for SPAM")
+text(model.rpart, all=TRUE ,cex=.75)
+draw.tree(model.rpart, cex=0.5, nodeinfo=TRUE, col=gray(0:8 / 8))
+```
+
+### Confusion Matrix (RPart)
+```{r dependson="model_rpart"}
+prediction.rpart <- predict(model.rpart, newdata=DATASET.test, type='class')
+table("Actual Class" = DATASET.test$spam, "Predicted Class" = prediction.rpart)
+error.rate.rpart <- sum(DATASET.test$spam != prediction.rpart) / nrow(DATASET.test)
+print (paste0("Accuary (Precision): ", 1 - error.rate.rpart))
+```
+
+------
+
+## Classification. Predictive Model. SVM (Support Vector Machine) Algorithm 
+```{r model_svm, dependson="loadData"}
+pc <- proc.time()
+model.svm <- svm(spam~., method="class", data=DATASET.train)
+proc.time() - pc
+summary(model.svm)
+```
+
+### Confusion Matrix (SVM)
+```{r dependson="model_svm"}
+prediction.svm <- predict(model.svm, newdata=DATASET.test, type='class')
+table("Actual Class" = DATASET.test$spam, "Predicted Class" = prediction.svm)
+error.rate.svm <- sum(DATASET.test$spam != prediction.svm) / nrow(DATASET.test)
+print (paste0("Accuary (Precision): ", 1 - error.rate.svm))
 ```

@@ -3,16 +3,23 @@
 ==================================
 
 Mineria de Datos ( Data Mining ) - 9 de Mayo 2013 
+#### Jose Maria Gomez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
+#### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
 -------------------------------------------------
-### Problemas de Clasificación y Regresión 
+### Problemas de RegresiÃ³n 
 
-  - Weka
-  - R
-  - RapidMiner 
-  - KNIME
+####  [Predicting House Price](predictHousePrice.md) 
+####  [Loans LendingClub](loansLendingClub.md) 
 
-#### José María Gómez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
-#### Guillermo Santos García [@gsantosgo](http://twitter.com/gsantosgo)
+### Problemas de ClasificaciÃ³n 
+
+####  [Spam or not Spam](spam.md)
+####  [Handwritten Digit Recognition](handwritten.md)
+####  [Human Activity Recognition](samsungPredictive.md)
+
+Tools (Weka,R,RapidMiner,KNIME,..)
+
 
   
   
+
