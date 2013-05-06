@@ -1,6 +1,5 @@
 ![alt text](logo/logoMadridJUG.png) Madrid Java User Group (Madrid JUG)
 
-
 Predicting House Price (REGRESSION PROBLEM) UNIVARIATE
 ========================================================
 This a regression problem (machine learning). The Predict **House Price** depends **House Size**
@@ -9,7 +8,21 @@ This a regression problem (machine learning). The Predict **House Price** depend
 #### Jose Maria Gomez Hidalgo [@jmgomez](http://twitter.com/jmgomez)
 #### Guillermo Santos Garcia [@gsantosgo](http://twitter.com/gsantosgo)
 #### This script is licensed under the GPLv2 license http://www.gnu.org/licenses/gpl.html
+
 ----------------------------------------------------------------
+
+### Load libraries/data/create new variables
+
+
+```r
+library(knitr)  # Markdown
+
+# Figures Label
+opts_chunk$set(fig.path = "figures/plot-predicthouse-")
+# opts_chunk$set(echo=FALSE, fig.path='figures/plot-predicthouse-',
+# cache=TRUE)
+```
+
 
 ### Data    
 
@@ -21,8 +34,18 @@ housePrices <- data.frame(cbind(size, price))
 ```
 
 
+Plot:
+
+```r
+plot(housePrices$size, housePrices$price, xlab = "Square meters", ylab = "$ Price (K)", 
+    main = "Predict House Price", pch = 19)
+```
+
+![plot of chunk unnamed-chunk-2](figures/plot-predicthouse-unnamed-chunk-2.png) 
+
+
 ### Linear Regression Model 
-   
+ 
 ### y = ax + b 
    
 
@@ -63,7 +86,7 @@ plot(housePrices$size, housePrices$price, xlab = "Square meters", ylab = "$ Pric
 abline(model.regression, col = 2, lwd = 3)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+![plot of chunk unnamed-chunk-5](figures/plot-predicthouse-unnamed-chunk-5.png) 
 
 
 ### Predicting House Price of 120 squared meters?
@@ -88,7 +111,7 @@ abline(model.regression, col = 2, lwd = 3)
 abline(h = result, v = sizequery, col = "blue", lty = "dotdash")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-6](figures/plot-predicthouse-unnamed-chunk-6.png) 
 
 
 ### Predicting House Price of 300 squared meters?
@@ -111,5 +134,5 @@ abline(model.regression, col = 2, lwd = 3)
 abline(h = result, v = sizequery, col = "blue", lty = "dotdash")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](figures/plot-predicthouse-unnamed-chunk-7.png) 
 

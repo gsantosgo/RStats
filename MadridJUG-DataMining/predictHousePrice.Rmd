@@ -28,8 +28,13 @@ price <- c(70, 83, 74, 93, 89, 58, 85, 114, 95, 100, 138, 111, 124, 161, 172)
 housePrices <- data.frame(cbind(size, price))
 ```
 
+Plot:
+```{r fig.width=7, fig.height=6}
+plot(housePrices$size, housePrices$price, xlab="Square meters", ylab="$ Price (K)", main="Predict House Price",pch=19)
+```
+
 ### Linear Regression Model 
-   
+ 
 ### y = ax + b 
    
 ```{r}
